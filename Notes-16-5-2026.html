@@ -1,0 +1,195 @@
+<html>
+        <head><title>Downloaded HTML</title></head>
+        <body>
+            <pre style="white-space: pre-wrap; word-wrap: break-word;"><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LactaRate | Malaysia Animal Husbandry Analytics</title>
+    <script src="https://cdn.tailwindcss.org"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0f4f0; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(229, 231, 235, 1);
+        }
+        .math-font { font-family: 'Times New Roman', Times, serif; font-style: italic; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto">
+        <header class="mb-8 text-center">
+            <div class="inline-block bg-green-600 text-white px-4 py-1 rounded-full text-sm font-semibold mb-2">
+                SFH: Animal Husbandry Technology Module
+            </div>
+            <h1 class="text-4xl font-bold text-slate-800 mb-2">LactaRate: Lactation Curve Derivatives</h1>
+            <p class="text-slate-600 max-w-2xl mx-auto">
+                Analyzing the production efficiency of Holstein-Friesian cattle in Malaysia using real-time rate of change calculations.
+            </p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="lg:col-span-1 space-y-6">
+                <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-green-500">
+                    <h2 class="text-xl font-bold text-slate-800 mb-3 uppercase tracking-wider text-sm">The Bioscience Problem</h2>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-4">
+                        In the Malaysian dairy industry (e.g., Farm Fresh or DVS data), managing the <strong>Lactation Curve</strong> is vital. A cow starts producing milk after calving, peaks around weeks 8–10, and then gradually declines.
+                    </p>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Farmers use the <strong>Derivative f'(x)</strong> to calculate the <span class="text-green-700 font-bold">Rate of Persistence</span>. If the decline is too sharp (a large negative derivative), it indicates nutritional stress or heat stress common in our tropical climate.
+                    </p>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-blue-500">
+                    <h2 class="text-xl font-bold text-slate-800 mb-3 uppercase tracking-wider text-sm">Mathematical Model</h2>
+                    <div class="bg-slate-50 p-4 rounded-lg mb-4">
+                        <p class="text-sm font-semibold text-slate-500 mb-1">Function f(x) [Yield]:</p>
+                        <p class="text-lg math-font text-blue-700">f(x) = -0.003x³ + 0.12x² + 0.2x + 22</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg">
+                        <p class="text-sm font-semibold text-slate-500 mb-1">Derivative f'(x) [Rate]:</p>
+                        <p class="text-lg math-font text-red-600">f'(x) = -0.009x² + 0.24x + 0.2</p>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-4 italic">
+                        *Realistic curve parameters for local Holstein-Friesian breeds producing ~25-30L at peak.
+                    </p>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 glass-card p-6 rounded-2xl shadow-lg relative">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-slate-800">Lactation Timeline (44 Weeks)</h2>
+                    <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Interactive: Click the graph</span>
+                </div>
+                
+                <div class="relative h-[400px]">
+                    <canvas id="lactationChart"></canvas>
+                </div>
+
+                <div id="resultDisplay" class="mt-6 p-4 bg-slate-800 text-white rounded-xl hidden transition-all duration-300">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-xs uppercase text-slate-400">Selected Time</p>
+                            <p class="text-xl font-bold" id="resWeek">Week 0</p>
+                        </div>
+                        <div>
+                            <p class="text-xs uppercase text-slate-400">Rate of Change (f')</p>
+                            <p class="text-xl font-bold text-green-400" id="resDerivative">0.00 L/week</p>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-slate-700">
+                        <p class="text-sm italic" id="resExplanation">Click a point on the line to analyze the biological state.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="text-center text-slate-500 text-sm pb-8">
+            <p>Data Reference: General parameters modeled after <em>Department of Veterinary Services (DVS) Malaysia</em> Milk Production Statistics.</p>
+            <p class="mt-1">&copy; 2024 SFH Bioscience Tech | Developed for Undergraduate Learning</p>
+        </footer>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('lactationChart').getContext('2d');
+        const resultBox = document.getElementById('resultDisplay');
+        const resWeek = document.getElementById('resWeek');
+        const resDerivative = document.getElementById('resDerivative');
+        const resExplanation = document.getElementById('resExplanation');
+
+        // Function: f(x) = -0.003x³ + 0.12x² + 0.2x + 22
+        const f = (x) => -0.003 * Math.pow(x, 3) + 0.12 * Math.pow(x, 2) + 0.2 * x + 22;
+        
+        // Derivative: f'(x) = -0.009x² + 0.24x + 0.2
+        const fdash = (x) => -0.009 * Math.pow(x, 2) + 0.24 * x + 0.2;
+
+        const labels = Array.from({length: 45}, (_, i) => i);
+        const dataPoints = labels.map(x => f(x));
+
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Milk Yield (Liters/Day)',
+                    data: dataPoints,
+                    borderColor: '#059669',
+                    backgroundColor: 'rgba(5, 150, 105, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 8,
+                    pointBackgroundColor: '#059669'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Production (Liters/Day)', font: { weight: 'bold' } }
+                    },
+                    x: {
+                        title: { display: true, text: 'Weeks Post-Calving', font: { weight: 'bold' } }
+                    }
+                },
+                onClick: (e) => {
+                    const points = chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
+                    if (points.length) {
+                        const index = points[0].index;
+                        analyzePoint(index);
+                    }
+                }
+            }
+        });
+
+        function analyzePoint(x) {
+            const rate = fdash(x).toFixed(3);
+            const yieldVal = f(x).toFixed(2);
+            
+            resultBox.classList.remove('hidden');
+            resWeek.innerText = `Week ${x}`;
+            
+            let colorClass = "text-green-400";
+            let explanation = "";
+
+            if (rate > 0.5) {
+                colorClass = "text-green-400";
+                explanation = `<strong>Rapid Growth:</strong> Production is increasing at ${rate} L/week. The cow is in the early lactation phase. Increase high-protein concentrate feed now.`;
+            } else if (rate > 0) {
+                colorClass = "text-blue-300";
+                explanation = `<strong>Approaching Peak:</strong> The rate of increase is slowing down (${rate} L/week). Watch for the "Peak Yield" moment (where f'(x) becomes zero).`;
+            } else if (rate > -0.2) {
+                colorClass = "text-yellow-400";
+                explanation = `<strong>Optimal Persistence:</strong> Production is declining very slightly (${rate} L/week). This is ideal! It means the cow is maintaining high yield efficiently.`;
+            } else {
+                colorClass = "text-red-400";
+                explanation = `<strong>Sharp Decline:</strong> Yield is dropping at ${Math.abs(rate)} L/week. Check for heat stress or mastitis. This is common in Malaysian humidity if cooling systems (fans/mists) fail.`;
+            }
+
+            resDerivative.innerHTML = `<span class="${colorClass}">${rate} L/week</span>`;
+            resExplanation.innerHTML = explanation;
+            
+            // Highlight the selection on chart
+            chart.setActiveElements([{datasetIndex: 0, index: x}]);
+            chart.update();
+        }
+
+        window.onload = () => {
+            console.log("Dairy Bioscience Application Loaded.");
+        };
+    </script>
+</body>
+</html></pre>
+        </body>
+    </html>
